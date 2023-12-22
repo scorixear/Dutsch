@@ -14,4 +14,8 @@ export default interface IFsWrapper {
   createWriteStream(path: fs.PathLike, options?: BufferEncoding | undefined): IWriteStreamWrapper;
   rename(oldPath: fs.PathLike, newPath: fs.PathLike, callback: fs.NoParamCallback): void;
   mv(oldPath: fs.PathLike, newPath: fs.PathLike, callback: fs.NoParamCallback): void;
+  promisify<T>(
+    arg1: any,
+    func: (arg1: any, callback: (err: NodeJS.ErrnoException | null, data: T) => void) => void
+  ): Promise<T>;
 }

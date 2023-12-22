@@ -3,19 +3,24 @@ import cors from 'cors';
 
 import IJWTHandler from '../interfaces/IJWTHandler';
 import ICookieHandler from '../interfaces/ICookieHandler';
-import IFsWrapper from '../interfaces/IFsWrapper';
+import ITranslateService from '../interfaces/ITranslateService';
 import { Logger } from '../utils/logger';
 
 export default class ExpressHandler {
   public app: express.Application;
   private jwtHandler: IJWTHandler;
   private cookieHandler: ICookieHandler;
-  private fsWrapper: IFsWrapper;
+  private translateService: ITranslateService;
 
-  constructor(jwtHandler: IJWTHandler, cookieHandler: ICookieHandler, fsWrapper: IFsWrapper, useCors = true) {
+  constructor(
+    jwtHandler: IJWTHandler,
+    cookieHandler: ICookieHandler,
+    translateService: ITranslateService,
+    useCors = true
+  ) {
     this.jwtHandler = jwtHandler;
     this.cookieHandler = cookieHandler;
-    this.fsWrapper = fsWrapper;
+    this.translateService = translateService;
     this.app = express();
 
     const corsOptions = {
@@ -61,7 +66,31 @@ export default class ExpressHandler {
       }
     });
     this.app.get('/api/translate/dutsch', this.authorizeUser, async (req, res) => {
-      res.send('Hello World!');
+      const text = req.body['text'];
+      if (text !== undefined) {
+        try {
+          const result = await this.translateService.translateToDutsch(text);
+          res.send({ translated: result });
+        } catch (error) {
+          res.status(500).send({ error: 'Error while processing' });
+        }
+      } else {
+        res.status(400).send({ error: 'No text provided' });
+      }
+    });
+
+    this.app.get('/api/translate/deutsch', this.authorizeUser, async (req, res) => {
+      const text = req.body['text'];
+      if (text !== undefined) {
+        try {
+          const result = await this.translateService.translateToDeutsch(text);
+          res.send({ translated: result });
+        } catch (error) {
+          res.status(500).send({ error: 'Error while processing' });
+        }
+      } else {
+        res.status(400).send({ error: 'No text provided' });
+      }
     });
 
     this.app.get('/api/translate/deutsch', this.authorizeUser, async (req, res) => {

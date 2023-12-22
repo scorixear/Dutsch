@@ -42,4 +42,13 @@ export default class FsWrapper implements IFsWrapper {
   mv(oldPath: PathLike, newPath: PathLike, callback: NoParamCallback): void {
     fs.rename(oldPath, newPath, callback);
   }
+
+  promisify<T>(
+    arg1: any,
+    func: (arg1: any, callback: (err: NodeJS.ErrnoException | null, data: T) => void) => void
+  ): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      func(arg1, (err: NodeJS.ErrnoException | null, data: T) => (err ? reject(err) : resolve(data)));
+    });
+  }
 }

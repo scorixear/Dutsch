@@ -1,0 +1,3 @@
+[submodule "glish"]
+	path = glish
+	url = git@github.com:paralogical/glish.git
